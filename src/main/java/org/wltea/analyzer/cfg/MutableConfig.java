@@ -24,13 +24,13 @@ public class MutableConfig implements Configuration{
 	@Override
 	public boolean useSmart() {
 		// TODO Auto-generated method stub
-		return false;
+		return this.useSmart;
 	}
 
 	@Override
 	public void setUseSmart(boolean useSmart) {
 		// TODO Auto-generated method stub
-		
+		this.useSmart=useSmart;
 	}
 	@Override
 	public String getMainDictionary() {

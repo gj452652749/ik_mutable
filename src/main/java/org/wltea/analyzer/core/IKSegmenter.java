@@ -68,8 +68,8 @@ public final class IKSegmenter {
 	}
 	public IKSegmenter(Reader input , boolean useSmart,String dicFiles){
 		this.input = input;
-		this.cfg = ConfigFactory.getConfig(dicFiles);
-		this.cfg.setUseSmart(useSmart);
+		this.cfg = ConfigFactory.getConfig(useSmart,dicFiles);
+		//this.cfg.setUseSmart(useSmart);
 		this.init();
 	}
 	/**
@@ -89,6 +89,7 @@ public final class IKSegmenter {
 	 */
 	private void init(){
 		//初始化词典单例
+		//if(this.cfg instanceof DefaultConfig)
 		DictionaryFactory.getDictionary(this.cfg);
 		//初始化分词上下文
 		this.context = new AnalyzeContext(this.cfg);

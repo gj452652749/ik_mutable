@@ -5,11 +5,14 @@ import java.util.Map;
 
 public class ConfigFactory {
 	static Map<String ,Configuration > confMap=new HashMap<>();
-	public static Configuration getConfig(String dicFiles) {
-		if(confMap.containsKey(dicFiles)) 
-			return confMap.get(dicFiles);
+	public static Configuration getConfig(boolean useSmart,String dicFiles) {
+		String key=dicFiles+":"+useSmart;
+		if(confMap.containsKey(key)) {
+			return confMap.get(key);
+		}
 		Configuration conf=new MutableConfig(dicFiles);
-		confMap.put(dicFiles, conf);
+		conf.setUseSmart(useSmart);
+		confMap.put(key, conf);
 		return conf; 
 	}
 

@@ -38,7 +38,10 @@ import java.util.Properties;
  *
  */
 public class DefaultConfig implements Configuration{
-
+	/*
+	 * 兼容旧版
+	 */
+	private static DefaultConfig singleton;
 	/*
 	 * 分词器默认字典路径 
 	 */
@@ -65,7 +68,15 @@ public class DefaultConfig implements Configuration{
 	 * @return Configuration单例
 	 */
 	public static Configuration getInstance(){
-		return new DefaultConfig();
+		if(singleton == null){
+			synchronized(DefaultConfig.class){
+				if(singleton == null){
+					singleton = new DefaultConfig();
+					return singleton;
+				}
+			}
+		}
+		return singleton;
 	}
 	
 	/*
