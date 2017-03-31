@@ -39,10 +39,6 @@ import java.util.Properties;
  */
 public class DefaultConfig implements Configuration{
 	/*
-	 * 兼容旧版
-	 */
-	private static DefaultConfig singleton;
-	/*
 	 * 分词器默认字典路径 
 	 */
 	private static final String PATH_DIC_MAIN = "org/wltea/analyzer/dic/main2012.dic";
@@ -68,15 +64,7 @@ public class DefaultConfig implements Configuration{
 	 * @return Configuration单例
 	 */
 	public static Configuration getInstance(){
-		if(singleton == null){
-			synchronized(DefaultConfig.class){
-				if(singleton == null){
-					singleton = new DefaultConfig();
-					return singleton;
-				}
-			}
-		}
-		return singleton;
+		return new DefaultConfig();
 	}
 	
 	/*

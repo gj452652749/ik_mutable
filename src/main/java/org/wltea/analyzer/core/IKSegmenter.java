@@ -62,8 +62,8 @@ public final class IKSegmenter {
 	 */
 	public IKSegmenter(Reader input , boolean useSmart){
 		this.input = input;
-		this.cfg = DefaultConfig.getInstance();
-		this.cfg.setUseSmart(useSmart);
+		this.cfg = ConfigFactory.getDefaultConfig(useSmart);
+		//this.cfg.setUseSmart(useSmart);
 		this.init();
 	}
 	public IKSegmenter(Reader input , boolean useSmart,String dicFiles){
