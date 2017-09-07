@@ -49,7 +49,11 @@ public interface Configuration {
 	 */
 	public void setUseSmart(boolean useSmart);
 	
-	
+	/**
+	 * 是否采用分布式词库
+	 * @return
+	 */
+	public String getDistributedDic();
 	/**
 	 * 获取主词典路径
 	 * 

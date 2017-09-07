@@ -163,6 +163,12 @@ public class DefaultConfig implements Configuration{
 		}		
 		return extStopWordDictFiles;		
 	}
+
+	@Override
+	public String getDistributedDic() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 			
 
 }

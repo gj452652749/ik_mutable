@@ -87,21 +87,11 @@ public final class IKTokenizer extends Tokenizer {
 		init(useSmart,dicFiles);
 	}
 	public IKTokenizer(Reader reader, boolean useSmart) {
-		try {
-			super.setReader(reader);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		super.setReader(reader);
 		init(useSmart);
 	}
-	public IKTokenizer(Reader reader, boolean useSmart,String dicFiles) {
-		try {
-			super.setReader(reader);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public IKTokenizer(Reader reader, boolean useSmart,String dicFiles) throws IOException {
+		super.setReader(reader);
 		init(useSmart,dicFiles);
 	}
 	public void addAttributes() {

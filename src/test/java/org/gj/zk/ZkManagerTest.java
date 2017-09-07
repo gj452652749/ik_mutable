@@ -1,0 +1,43 @@
+package org.gj.zk;
+
+import org.I0Itec.zkclient.ZkClient;
+import org.I0Itec.zkclient.serialize.SerializableSerializer;
+import org.junit.Test;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+
+public class ZkManagerTest {
+	String zkHosts="127.0.0.1:2181";
+	ZkClient zkClient = new ZkClient(zkHosts,10000,10000,new SerializableSerializer());
+	@Test
+	public void createNode() {
+		String path = "/solr/ik/thireedic12.dic";  
+		JSONArray dic=new JSONArray();
+		dic.add("有象");
+		dic.add("视频");
+        //zkClient.createPersistent(path, dic.toJSONString());
+        zkClient.writeData(path, dic.toJSONString());  
+	}
+	@Test
+	public void deleteNode() {
+		String path = "/solr/ik/thireedic12.dic";  
+		zkClient.delete(path);
+	}
+	@Test
+	public void appendData() {
+		String path = "/solr/ik/thireedic12.dic";  
+		Object data=zkClient.readData(path);
+		JSONArray dic=JSONArray.parseArray((String) data);
+		dic.add("合适的");
+		dic.add("let's");
+        zkClient.writeData(path, dic.toJSONString());  
+	}
+	@Test
+	public void getNodeData() {
+		String path = "/solr/ik/thireedic12.dic";  
+		Object data=zkClient.readData(path);
+		System.out.println("get data:"+data);
+	}
+
+}

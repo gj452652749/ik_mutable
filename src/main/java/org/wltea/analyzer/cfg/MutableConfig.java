@@ -6,12 +6,23 @@ import java.util.List;
 public class MutableConfig implements Configuration{
 
 	public List<String> ExtDictionarys=new ArrayList<>();
+	public String distributedDicPath=null;
 	private boolean useSmart;
 	private static final String PATH_DIC_QUANTIFIER = "org/wltea/analyzer/dic/quantifier.dic";
-	public MutableConfig(String dicFiles) {
+	String extDicFiles;
+	public MutableConfig(String extDicFiles) {
 		super();
+		initExtDic(extDicFiles);
+	}
+	public MutableConfig(String extDicFiles,String distributedDicPath) {
+		super();
+		initExtDic(extDicFiles);
+		this.distributedDicPath=distributedDicPath;
+	}
+	private void initExtDic(String extDicFiles) {
+		this.extDicFiles=extDicFiles;
 		//使用;分割多个扩展字典配置
-		String[] filePaths = dicFiles.split(";");
+		String[] filePaths = extDicFiles.split(";");
 		if(filePaths != null){
 			for(String filePath : filePaths){
 				if(filePath != null && !"".equals(filePath.trim())){
@@ -20,7 +31,6 @@ public class MutableConfig implements Configuration{
 			}
 		}
 	}
-
 	@Override
 	public boolean useSmart() {
 		// TODO Auto-generated method stub
@@ -41,19 +51,35 @@ public class MutableConfig implements Configuration{
 	@Override
 	public String getQuantifierDicionary() {
 		// TODO Auto-generated method stub
-		return PATH_DIC_QUANTIFIER;
+		return "null.dic";
 	}
 
 	@Override
 	public List<String> getExtDictionarys() {
 		// TODO Auto-generated method stub
-		return this.ExtDictionarys;
+		return ExtDictionarys;
 	}
 
 	@Override
 	public List<String> getExtStopWordDictionarys() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public int hashCode() {
+		// TODO Auto-generated method stub
+		return (this.extDicFiles+":"+this.distributedDicPath+":"+this.useSmart).hashCode();
+	}
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return this.extDicFiles.replaceAll("[`~!@#$%^&*()+=|{}':;',//[//].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]", "_")+"_"+this.useSmart;
+	}
+	@Override
+	public String getDistributedDic() {
+		// TODO Auto-generated method stub
+		return distributedDicPath;
 	}
 
 
