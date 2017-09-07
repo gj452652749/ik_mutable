@@ -30,9 +30,7 @@ import java.util.List;
 
 import org.wltea.analyzer.cfg.ConfigFactory;
 import org.wltea.analyzer.cfg.Configuration;
-import org.wltea.analyzer.cfg.DefaultConfig;
-import org.wltea.analyzer.dic.Dictionary;
-import org.wltea.analyzer.dic.DictionaryFactory;
+import org.wltea.analyzer.dic.DistributedDictionaryFactory;
 
 /**
  * IK分词器主类
@@ -72,6 +70,12 @@ public final class IKSegmenter {
 		//this.cfg.setUseSmart(useSmart);
 		this.init();
 	}
+	public IKSegmenter(Reader input , boolean useSmart,String dicFiles,String distributedDicPath){
+		this.input = input;
+		this.cfg = ConfigFactory.getDistributedConfig(useSmart, dicFiles, distributedDicPath);
+		//this.cfg.setUseSmart(useSmart);
+		this.init();
+	}
 	/**
 	 * IK分词器构造函数
 	 * @param input
@@ -90,7 +94,7 @@ public final class IKSegmenter {
 	private void init(){
 		//初始化词典单例
 		//if(this.cfg instanceof DefaultConfig)
-		DictionaryFactory.getDictionary(this.cfg);
+		DistributedDictionaryFactory.getInstance().getDictionary(this.cfg);
 		//初始化分词上下文
 		this.context = new AnalyzeContext(this.cfg);
 		//加载子分词器

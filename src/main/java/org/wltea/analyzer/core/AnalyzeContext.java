@@ -33,8 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.wltea.analyzer.cfg.Configuration;
-import org.wltea.analyzer.dic.Dictionary;
-import org.wltea.analyzer.dic.DictionaryFactory;
+import org.wltea.analyzer.dic.DistributedDictionaryFactory;
 
 /**
  * 
@@ -323,7 +322,7 @@ class AnalyzeContext {
 		while(result != null){
     		//数量词合并
     		this.compound(result);
-    		if(DictionaryFactory.getDictionary(cfg).isStopWord(this.segmentBuff ,  result.getBegin() , result.getLength())){
+    		if(DistributedDictionaryFactory.getInstance().getDictionary(cfg).isStopWord(this.segmentBuff ,  result.getBegin() , result.getLength())){
        			//是停止词继续取列表的下一个
     			result = this.results.pollFirst(); 				
     		}else{

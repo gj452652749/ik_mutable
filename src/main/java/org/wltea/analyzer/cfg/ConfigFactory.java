@@ -16,6 +16,16 @@ public class ConfigFactory {
 		confMap.put(key, conf);
 		return conf; 
 	}
+	public static Configuration getDistributedConfig(boolean useSmart,String dicFiles,String distributedDicPath) {
+		String key=dicFiles+":"+useSmart+":"+distributedDicPath;
+		if(confMap.containsKey(key)) {
+			return confMap.get(key);
+		}
+		Configuration conf=new MutableConfig(dicFiles,distributedDicPath);
+		conf.setUseSmart(useSmart);
+		confMap.put(key, conf);
+		return conf; 
+	}
 	/**
 	 * 兼容旧版不可变词库的模式
 	 * @param useSmart

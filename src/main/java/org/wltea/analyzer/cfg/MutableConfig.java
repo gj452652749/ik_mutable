@@ -20,6 +20,8 @@ public class MutableConfig implements Configuration{
 		this.distributedDicPath=distributedDicPath;
 	}
 	private void initExtDic(String extDicFiles) {
+		if(null==extDicFiles)
+			return;
 		this.extDicFiles=extDicFiles;
 		//使用;分割多个扩展字典配置
 		String[] filePaths = extDicFiles.split(";");

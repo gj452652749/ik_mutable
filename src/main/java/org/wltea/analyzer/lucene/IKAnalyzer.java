@@ -30,13 +30,14 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
 
 /**
- * IK分词器，Lucene Analyzer接口实现
- * 兼容Lucene 4.0版本
+ * IK分词器，Lucene Analyzer接口实现 兼容Lucene 4.0版本
  */
-public final class IKAnalyzer extends Analyzer{
-	
+public final class IKAnalyzer extends Analyzer {
+
 	private boolean useSmart;
 	private String dicFiles;
+	private String distributedDicPath = null;
+
 	public boolean useSmart() {
 		return useSmart;
 	}
@@ -46,35 +47,48 @@ public final class IKAnalyzer extends Analyzer{
 	}
 
 	/**
-	 * IK分词器Lucene  Analyzer接口实现类
+	 * IK分词器Lucene Analyzer接口实现类
 	 * 
 	 * 默认细粒度切分算法
 	 */
-	public IKAnalyzer(){
+	public IKAnalyzer() {
 		this(false);
 	}
-	
+
 	/**
 	 * IK分词器Lucene Analyzer接口实现类
 	 * 
-	 * @param useSmart 当为true时，分词器进行智能切分
+	 * @param useSmart
+	 *            当为true时，分词器进行智能切分
 	 */
-	public IKAnalyzer(boolean useSmart){
+	public IKAnalyzer(boolean useSmart) {
 		super();
 		this.useSmart = useSmart;
 	}
-	public IKAnalyzer(boolean useSmart,String dicFiles){
+
+	public IKAnalyzer(boolean useSmart, String dicFiles) {
 		super();
 		this.useSmart = useSmart;
-		this.dicFiles=dicFiles;
+		this.dicFiles = dicFiles;
 	}
+
+	public IKAnalyzer(boolean useSmart, String dicFiles, String distributedDicPath) {
+		super();
+		this.useSmart = useSmart;
+		this.dicFiles = dicFiles;
+		this.distributedDicPath = distributedDicPath;
+	}
+
 	/**
 	 * 重载Analyzer接口，构造分词组件
 	 */
 	@Override
 	protected TokenStreamComponents createComponents(String fieldName) {
-		Tokenizer _IKTokenizer ;
-		_IKTokenizer= new IKTokenizer(this.useSmart(),dicFiles);
+		Tokenizer _IKTokenizer;
+		if (null == this.distributedDicPath)
+			_IKTokenizer = new IKTokenizer(this.useSmart(), dicFiles);
+		else
+			_IKTokenizer = new IKTokenizer(this.useSmart(), dicFiles, distributedDicPath);
 		return new TokenStreamComponents(_IKTokenizer);
 	}
 
