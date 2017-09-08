@@ -93,7 +93,10 @@ public final class IKTokenizer extends Tokenizer {
 		super(factory);
 		init(useSmart, dicFiles);
 	}
-
+	public IKTokenizer(AttributeFactory factory, boolean useSmart, String dicFiles, String distributedDicPath) {
+		super(factory);
+		init(useSmart, dicFiles,distributedDicPath);
+	}
 	public IKTokenizer(Reader reader, boolean useSmart) {
 		super.setReader(reader);
 		init(useSmart);

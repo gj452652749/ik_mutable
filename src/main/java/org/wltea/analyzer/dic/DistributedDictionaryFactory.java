@@ -2,6 +2,7 @@ package org.wltea.analyzer.dic;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +29,8 @@ public class DistributedDictionaryFactory {
 	ZkClient zkClient = new ZkClient(zkHosts, 10000, 10000, new SerializableSerializer());
 	static Map<Configuration, Dictionary> dictionaryMap = new HashMap<>();
 	static String REMOTE_DIC_ROOT = "/solr/ik";
-	Map<String, Set<Configuration>> map = new HashMap<>();
+	Map<String, Set<String>> dicRepo = new HashMap<>();// 词典仓库
+	Map<String, Set<String>> pullDicCache = new HashMap<>();// 提交缓存
 
 	private DistributedDictionaryFactory() {
 		init();
@@ -56,13 +58,59 @@ public class DistributedDictionaryFactory {
 
 		});
 	}
-
+	public void reomveWords(Configuration cfg, Set<String> pullDicCache) {
+		String distributedDicPath=REMOTE_DIC_ROOT + "/" + cfg.getDistributedDic();
+		Set<String> repoDic=dicRepo.get(distributedDicPath);
+		Set<String> differenceSet=new HashSet<String>();
+		for(String ele:pullDicCache) {
+			if(!repoDic.contains(ele))
+				differenceSet.add(ele);
+			if(differenceSet.size()>1000) {
+				dictionaryMap.get(cfg).disableWords(differenceSet);
+				differenceSet.clear();
+			}
+		}
+		dictionaryMap.get(cfg).disableWords(repoDic);
+	}
+	public void addWords(Configuration cfg, Set<String> pullDicCache) {
+		String distributedDicPath=REMOTE_DIC_ROOT + "/" + cfg.getDistributedDic();
+		Set<String> repoDic=dicRepo.get(distributedDicPath);
+		Set<String> differenceSet=new HashSet<String>();
+		for(String ele:repoDic) {
+			if(!pullDicCache.contains(ele))
+				differenceSet.add(ele);
+			if(differenceSet.size()>1000) {
+				dictionaryMap.get(cfg).disableWords(differenceSet);
+				differenceSet.clear();
+			}
+		}
+		dictionaryMap.get(cfg).disableWords(repoDic);
+	}
+	@Deprecated
+	public Set<String> getWordsNeedToBeRemoved(String distributedDicPath, Set<String> pullDicCache) {
+		Set<String> repoDic=dicRepo.get(distributedDicPath);
+		Set<String> differenceSet=new HashSet<String>();
+		for(String ele:pullDicCache) {
+			if(!repoDic.contains(ele))
+				repoDic.add(ele);
+			if(repoDic.size()>1000);
+				
+		}
+		repoDic.removeAll(pullDicCache);
+		return repoDic;
+	}
+	@Deprecated
+	public void getWordsNeedToBeAdded(String distributedDicPath, Set<String> pullDicCache) {
+		
+	}
 	public void reloadDistributedDic(Configuration cfg, Object dicData) {
 		JSONObject jsonObj = JSON.parseObject((String) dicData);
 		JSONArray jsonArray = jsonObj.getJSONArray("data");
+		Set<String> pullDicCache =new HashSet<String>();
 		List<String> list = new ArrayList<>();
 		for (int i = 0; i <= (jsonArray.size() - 1); i++) {
 			String word = jsonArray.getString(i);
+			pullDicCache.add(word);
 			list.add(word);
 			// 每1000个词批量添加一次
 			if (list.size() > 1000) {

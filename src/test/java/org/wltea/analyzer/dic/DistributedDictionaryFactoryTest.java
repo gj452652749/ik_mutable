@@ -32,8 +32,9 @@ public class DistributedDictionaryFactoryTest {
 		Object data = zkClient.readData(path);
 		JSONObject jsonObj = JSON.parseObject((String) data);
 		JSONArray jsonArray = jsonObj.getJSONArray("data");
-		jsonArray.add("合适的");
+		jsonArray.add("境地");
 		jsonArray.add("let's");
+		jsonArray.add("合适的");
 		jsonObj.put("data", jsonArray.toJSONString());
 		zkClient.writeData(path, jsonObj.toJSONString());
 	}
