@@ -24,7 +24,7 @@ public class DistributedDictionaryFactoryTest {
 		// 如果节点不存在，则创建
 		if (!zkClient.exists(path)) {
 			JSONObject jsonObj = new JSONObject();
-			jsonObj.put("cfgCode", "sss");
+			jsonObj.put("cfgCode", "sss1");
 			jsonObj.put("data", "[]");
 			zkClient.createPersistent(path, jsonObj.toJSONString());
 		}
@@ -33,8 +33,8 @@ public class DistributedDictionaryFactoryTest {
 		JSONObject jsonObj = JSON.parseObject((String) data);
 		JSONArray jsonArray = jsonObj.getJSONArray("data");
 		jsonArray.add("境地");
-		jsonArray.add("let's");
-		jsonArray.add("合适的");
+		jsonArray.add("湖北");
+		jsonArray.add("合适");
 		jsonObj.put("data", jsonArray.toJSONString());
 		zkClient.writeData(path, jsonObj.toJSONString());
 	}

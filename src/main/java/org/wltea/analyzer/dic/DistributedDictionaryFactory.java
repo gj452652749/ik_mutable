@@ -29,7 +29,8 @@ public class DistributedDictionaryFactory {
 	ZkClient zkClient = new ZkClient(zkHosts, 10000, 10000, new SerializableSerializer());
 	static Map<Configuration, Dictionary> dictionaryMap = new HashMap<>();
 	static String REMOTE_DIC_ROOT = "/solr/ik";
-	Map<String, Set<String>> dicRepo = new HashMap<>();// 词典仓库
+	// 每个config对应的词典仓库(会有冗余，后期优化)
+	Map<Integer, Set<String>> dicRepo = new HashMap<>();
 	Map<String, Set<String>> pullDicCache = new HashMap<>();// 提交缓存
 
 	private DistributedDictionaryFactory() {
@@ -58,67 +59,68 @@ public class DistributedDictionaryFactory {
 
 		});
 	}
-	public void reomveWords(Configuration cfg, Set<String> pullDicCache) {
-		String distributedDicPath=REMOTE_DIC_ROOT + "/" + cfg.getDistributedDic();
-		Set<String> repoDic=dicRepo.get(distributedDicPath);
-		Set<String> differenceSet=new HashSet<String>();
-		for(String ele:pullDicCache) {
-			if(!repoDic.contains(ele))
+	//要删除的词库=repoDic-pullDicCache
+	public void reomveWords(Configuration cfg, Set<String> repoDic, Set<String> pullDicCache) {
+		Set<String> differenceSet = new HashSet<String>();
+		for (String ele : repoDic) {
+			if (!pullDicCache.contains(ele))
 				differenceSet.add(ele);
-			if(differenceSet.size()>1000) {
+			if (differenceSet.size() > 1000) {
 				dictionaryMap.get(cfg).disableWords(differenceSet);
 				differenceSet.clear();
 			}
 		}
-		dictionaryMap.get(cfg).disableWords(repoDic);
+		dictionaryMap.get(cfg).disableWords(differenceSet);
 	}
-	public void addWords(Configuration cfg, Set<String> pullDicCache) {
-		String distributedDicPath=REMOTE_DIC_ROOT + "/" + cfg.getDistributedDic();
-		Set<String> repoDic=dicRepo.get(distributedDicPath);
-		Set<String> differenceSet=new HashSet<String>();
-		for(String ele:repoDic) {
-			if(!pullDicCache.contains(ele))
+	//要增加的词库=pullDicCache-repoDic
+	public void addWords(Configuration cfg, Set<String> repoDic, Set<String> pullDicCache) {
+		Set<String> differenceSet = new HashSet<String>();
+		for (String ele : pullDicCache) {
+			if (!repoDic.contains(ele))
 				differenceSet.add(ele);
-			if(differenceSet.size()>1000) {
-				dictionaryMap.get(cfg).disableWords(differenceSet);
+			if (differenceSet.size() > 1000) {
+				dictionaryMap.get(cfg).addWords(differenceSet);
 				differenceSet.clear();
 			}
 		}
-		dictionaryMap.get(cfg).disableWords(repoDic);
+		dictionaryMap.get(cfg).addWords(differenceSet);
 	}
+
 	@Deprecated
-	public Set<String> getWordsNeedToBeRemoved(String distributedDicPath, Set<String> pullDicCache) {
-		Set<String> repoDic=dicRepo.get(distributedDicPath);
-		Set<String> differenceSet=new HashSet<String>();
-		for(String ele:pullDicCache) {
-			if(!repoDic.contains(ele))
+	public Set<String> getWordsNeedToBeRemoved(Set<String> repoDic, Set<String> pullDicCache) {
+		Set<String> differenceSet = new HashSet<String>();
+		for (String ele : pullDicCache) {
+			if (!repoDic.contains(ele))
 				repoDic.add(ele);
-			if(repoDic.size()>1000);
-				
+			if (repoDic.size() > 1000)
+				;
+
 		}
 		repoDic.removeAll(pullDicCache);
 		return repoDic;
 	}
+
 	@Deprecated
 	public void getWordsNeedToBeAdded(String distributedDicPath, Set<String> pullDicCache) {
-		
+
 	}
 	public void reloadDistributedDic(Configuration cfg, Object dicData) {
 		JSONObject jsonObj = JSON.parseObject((String) dicData);
 		JSONArray jsonArray = jsonObj.getJSONArray("data");
-		Set<String> pullDicCache =new HashSet<String>();
-		List<String> list = new ArrayList<>();
+		Set<String> pullDicCache = new HashSet<String>();
 		for (int i = 0; i <= (jsonArray.size() - 1); i++) {
 			String word = jsonArray.getString(i);
 			pullDicCache.add(word);
-			list.add(word);
-			// 每1000个词批量添加一次
-			if (list.size() > 1000) {
-				dictionaryMap.get(cfg).addWords(list);
-				list.clear();
-			}
 		}
-		dictionaryMap.get(cfg).addWords(list);
+		if(!dicRepo.containsKey(cfg.hashCode()))
+			dicRepo.put(cfg.hashCode(), new HashSet<String>());
+		Set<String> repoDic=dicRepo.get(cfg.hashCode());
+		reomveWords(cfg,repoDic, pullDicCache);
+		addWords(cfg, repoDic,pullDicCache);
+		//将仓库指针指向提交
+		repoDic=null;
+		dicRepo.put(cfg.hashCode(), pullDicCache);
+		pullDicCache=null;
 	}
 
 	/**
