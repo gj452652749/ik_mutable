@@ -8,15 +8,16 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
 public class ZkManagerTest {
-	String zkHosts="127.0.0.1:2181";
+	String zkHosts="10.0.31.133:2181";
 	ZkClient zkClient = new ZkClient(zkHosts,10000,10000,new SerializableSerializer());
 	@Test
 	public void createNode() {
-		String path = "/solr/ik/thireedic12.dic";  
+		String path = "/solr1/zk";  
 		JSONArray dic=new JSONArray();
 		dic.add("有象");
 		dic.add("视频");
-        //zkClient.createPersistent(path, dic.toJSONString());
+		//true:父节点不存在则创建
+        zkClient.createPersistent(path, true);
         zkClient.writeData(path, dic.toJSONString());  
 	}
 	@Test

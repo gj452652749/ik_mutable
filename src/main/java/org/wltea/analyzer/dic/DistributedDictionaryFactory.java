@@ -1,6 +1,5 @@
 package org.wltea.analyzer.dic;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +11,7 @@ import org.I0Itec.zkclient.IZkDataListener;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.serialize.SerializableSerializer;
 import org.wltea.analyzer.cfg.Configuration;
+import org.wltea.analyzer.consts.ConfigConsts;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -25,10 +25,9 @@ import com.alibaba.fastjson.JSONObject;
  */
 public class DistributedDictionaryFactory {
 	private static DistributedDictionaryFactory instance;
-	String zkHosts = "127.0.0.1:2181";
-	ZkClient zkClient = new ZkClient(zkHosts, 10000, 10000, new SerializableSerializer());
+	final static String CONF_ROOT="/solr/ik";
+	ZkClient zkClient = new ZkClient(ConfigConsts.getInstance().getZkHost(), 10000, 10000, new SerializableSerializer());
 	static Map<Configuration, Dictionary> dictionaryMap = new HashMap<>();
-	static String REMOTE_DIC_ROOT = "/solr/ik";
 	// 每个config对应的词典仓库(会有冗余，后期优化)
 	Map<Integer, Set<String>> dicRepo = new HashMap<>();
 	Map<String, Set<String>> pullDicCache = new HashMap<>();// 提交缓存
@@ -49,7 +48,11 @@ public class DistributedDictionaryFactory {
 	}
 
 	private void init() {
-		zkClient.subscribeChildChanges("/solr/ik", new IZkChildListener() {
+		// 如果节点不存在，则创建
+		if (!zkClient.exists(CONF_ROOT)) {
+			zkClient.createPersistent(CONF_ROOT, true);
+		}
+		zkClient.subscribeChildChanges(CONF_ROOT, new IZkChildListener() {
 
 			@Override
 			public void handleChildChange(String arg0, List<String> arg1) throws Exception {
@@ -59,7 +62,8 @@ public class DistributedDictionaryFactory {
 
 		});
 	}
-	//要删除的词库=repoDic-pullDicCache
+
+	// 要删除的词库=repoDic-pullDicCache
 	public void reomveWords(Configuration cfg, Set<String> repoDic, Set<String> pullDicCache) {
 		Set<String> differenceSet = new HashSet<String>();
 		for (String ele : repoDic) {
@@ -72,7 +76,8 @@ public class DistributedDictionaryFactory {
 		}
 		dictionaryMap.get(cfg).disableWords(differenceSet);
 	}
-	//要增加的词库=pullDicCache-repoDic
+
+	// 要增加的词库=pullDicCache-repoDic
 	public void addWords(Configuration cfg, Set<String> repoDic, Set<String> pullDicCache) {
 		Set<String> differenceSet = new HashSet<String>();
 		for (String ele : pullDicCache) {
@@ -104,6 +109,7 @@ public class DistributedDictionaryFactory {
 	public void getWordsNeedToBeAdded(String distributedDicPath, Set<String> pullDicCache) {
 
 	}
+
 	public void reloadDistributedDic(Configuration cfg, Object dicData) {
 		JSONObject jsonObj = JSON.parseObject((String) dicData);
 		JSONArray jsonArray = jsonObj.getJSONArray("data");
@@ -112,22 +118,22 @@ public class DistributedDictionaryFactory {
 			String word = jsonArray.getString(i);
 			pullDicCache.add(word);
 		}
-		if(!dicRepo.containsKey(cfg.hashCode()))
+		if (!dicRepo.containsKey(cfg.hashCode()))
 			dicRepo.put(cfg.hashCode(), new HashSet<String>());
-		Set<String> repoDic=dicRepo.get(cfg.hashCode());
-		reomveWords(cfg,repoDic, pullDicCache);
-		addWords(cfg, repoDic,pullDicCache);
-		//将仓库指针指向提交
-		repoDic=null;
+		Set<String> repoDic = dicRepo.get(cfg.hashCode());
+		reomveWords(cfg, repoDic, pullDicCache);
+		addWords(cfg, repoDic, pullDicCache);
+		// 将仓库指针指向提交
+		repoDic = null;
 		dicRepo.put(cfg.hashCode(), pullDicCache);
-		pullDicCache=null;
+		pullDicCache = null;
 	}
 
 	/**
 	 * 根据配置在zk上监听一个dic节点
 	 */
 	private void createDicNode(Configuration cfg) {
-		String path = REMOTE_DIC_ROOT + "/" + cfg.getDistributedDic();
+		String path = cfg.getDistributedDic();
 		// 如果节点不存在，则创建
 		if (!zkClient.exists(path)) {
 			JSONObject jsonObj = new JSONObject();

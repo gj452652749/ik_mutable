@@ -18,8 +18,8 @@ public class DistributedDictionaryFactoryTest {
 
 	@Test
 	public void addWords() {
-		Configuration conf = new MutableConfig("yxmain.dic", "yxdistrbuted.dic");
-		String path = DistributedDictionaryFactory.REMOTE_DIC_ROOT + "/" + conf.getDistributedDic();
+		Configuration conf = new MutableConfig("yxmain.dic", "/solr/ik/yxdistrbuted.dic");
+		String path = conf.getDistributedDic();
 		zkClient.delete(path);
 		// 如果节点不存在，则创建
 		if (!zkClient.exists(path)) {
@@ -40,8 +40,8 @@ public class DistributedDictionaryFactoryTest {
 	}
 	@Test
 	public void get() {
-		Configuration conf = new MutableConfig("yxmain.dic", "yxdistrbuted.dic");
-		String path = DistributedDictionaryFactory.REMOTE_DIC_ROOT + "/" + conf.getDistributedDic();
+		Configuration conf = new MutableConfig("yxmain.dic", "/solr/ik/yxdistrbuted.dic");
+		String path = conf.getDistributedDic();
 		// 如果节点不存在，则创建
 //		if (!zkClient.exists(path)) {
 //			JSONObject jsonObj = new JSONObject();
@@ -55,7 +55,7 @@ public class DistributedDictionaryFactoryTest {
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Configuration conf = new MutableConfig("yxmain.dic", "yxdistrbuted.dic");
+		Configuration conf = new MutableConfig("yxmain.dic", "/solr/ik/yxdistrbuted.dic");
 		DistributedDictionaryFactory.getInstance().getDictionary(conf);
 		try {
 			System.in.read();
