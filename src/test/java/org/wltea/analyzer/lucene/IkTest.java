@@ -14,10 +14,10 @@ public class IkTest {
 	@Test
 	public void analyse() {
 		//构建IK分词器，使用smart分词模式
-		Analyzer analyzer = new IKAnalyzer(true,"threeleveladministrativedivisions.dic","yxdistrbuted.dic");
+		Analyzer analyzer = new IKAnalyzer(true,"threeleveladministrativedivisions.dic","/solr/ik/yxdistrbuted.dic");
 		getToken(analyzer);
 		//构建IK分词器，使用smart分词模式
-		Analyzer analyzer1 = new IKAnalyzer(false,"threeleveladministrativedivisions.dic","yxdistrbuted.dic");
+		Analyzer analyzer1 = new IKAnalyzer(false,"threeleveladministrativedivisions.dic","/solr/ik/yxdistrbuted.dic");
 		getToken(analyzer1);
 	}
 	public void getToken(Analyzer analyzer) {
