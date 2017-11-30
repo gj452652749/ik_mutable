@@ -26,7 +26,7 @@ public class IkTest {
 				//获取Lucene的TokenStream对象
 			    TokenStream ts = null;
 				try {
-					ts = analyzer.tokenStream("myfield", new StringReader(",,a,,武汉市武昌区中国鐘合适的中國壹十个123一个红色的士多啤棃是紅色的ａｚ ＡＺ  ０９•"));
+					ts = analyzer.tokenStream("myfield", new StringReader(",,a,,武汉市春天武昌区中国鐘合适的中國壹十个123一个红色的士多啤棃是紅色的ａｚ ＡＺ  ０９•"));
 					//获取词元位置属性
 				    OffsetAttribute  offset = ts.addAttribute(OffsetAttribute.class); 
 				    //获取词元文本属性

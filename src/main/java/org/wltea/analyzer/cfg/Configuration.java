@@ -79,5 +79,5 @@ public interface Configuration {
 	 * @return List<String> 相对类加载器的路径
 	 */
 	public List<String> getExtStopWordDictionarys();
-			
+	public int getDicKey() ;
 }

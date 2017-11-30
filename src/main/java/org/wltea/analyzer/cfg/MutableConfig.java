@@ -71,7 +71,8 @@ public class MutableConfig implements Configuration{
 	@Override
 	public int hashCode() {
 		// TODO Auto-generated method stub
-		return (this.extDicFiles+":"+this.distributedDicPath+":"+this.useSmart).hashCode();
+		//以扩展词库和分布式词库的组合作为唯一标识
+		return (this.extDicFiles+":"+this.distributedDicPath).hashCode();
 	}
 	@Override
 	public String toString() {
@@ -82,6 +83,11 @@ public class MutableConfig implements Configuration{
 	public String getDistributedDic() {
 		// TODO Auto-generated method stub
 		return distributedDicPath;
+	}
+	@Override
+	public int getDicKey() {
+		// TODO Auto-generated method stub
+		return (this.extDicFiles+":"+this.distributedDicPath).hashCode();
 	}
 
 

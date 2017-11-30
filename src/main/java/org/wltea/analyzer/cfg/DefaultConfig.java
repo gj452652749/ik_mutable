@@ -169,6 +169,12 @@ public class DefaultConfig implements Configuration{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public int getDicKey() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 			
 
 }
