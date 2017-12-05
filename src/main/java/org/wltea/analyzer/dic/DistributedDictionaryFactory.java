@@ -111,10 +111,11 @@ public class DistributedDictionaryFactory {
 	}
 
 	public void reloadDistributedDic(Configuration cfg, Object dicData) {
-		JSONArray jsonArray = JSON.parseArray((String) dicData);
+		String dicDataStr=(String) dicData;
+		String[] lines=dicDataStr.split("\r\n");
 		Set<String> pullDicCache = new HashSet<String>();
-		for (int i = 0; i <= (jsonArray.size() - 1); i++) {
-			String word = jsonArray.getString(i);
+		for (int i = 0; i <= (lines.length - 1); i++) {
+			String word = lines[i];
 			pullDicCache.add(word);
 		}
 		if (!dicRepo.containsKey(cfg.hashCode()))

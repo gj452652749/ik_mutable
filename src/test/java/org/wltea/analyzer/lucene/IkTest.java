@@ -12,6 +12,15 @@ import org.junit.Test;
 
 public class IkTest {
 	@Test
+	public void distributedAnalyse() {
+		//构建IK分词器，使用smart分词模式
+		Analyzer analyzer = new IKAnalyzer(true,"threeleveladministrativedivisions.dic","/tokenizer/dic/1/common/goods");
+		getToken(analyzer);
+		//构建IK分词器，使用smart分词模式
+		Analyzer analyzer1 = new IKAnalyzer(false,"threeleveladministrativedivisions.dic","/tokenizer/dic/1/common/goods");
+		getToken(analyzer1);
+	}
+	@Test
 	public void analyse() {
 		//构建IK分词器，使用smart分词模式
 		Analyzer analyzer = new IKAnalyzer(true,"threeleveladministrativedivisions.dic","/solr/ik/yxdistrbuted.dic");
@@ -59,12 +68,12 @@ public class IkTest {
 	@Test
 	public void getDistributedDivisionTokens() {
 		//构建IK分词器，使用smart分词模式
-				Analyzer analyzer = new IKAnalyzer(false,"threeleveladministrativedivisions.dic","yxdistrbuted.dic");
+				Analyzer analyzer = new IKAnalyzer(false,"threeleveladministrativedivisions.dic","/tokenizer/dic/1/common/goods");
 				
 				//获取Lucene的TokenStream对象
 			    TokenStream ts = null;
 				try {
-					ts = analyzer.tokenStream("myfield", new StringReader(",,a,,武汉市武昌区中国鐘合适的中國壹十个123一个红色的士多啤棃是紅色的ａｚ ＡＺ  ０９•"));
+					ts = analyzer.tokenStream("myfield", new StringReader("绿光昨天春日春天美好"));
 					//获取词元位置属性
 				    OffsetAttribute  offset = ts.addAttribute(OffsetAttribute.class); 
 				    //获取词元文本属性
