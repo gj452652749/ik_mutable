@@ -8,7 +8,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
 public class ZkManagerTest {
-	String zkHosts="10.0.31.133:2181";
+	String zkHosts="10.0.34.10:2181";
 	ZkClient zkClient = new ZkClient(zkHosts,10000,10000,new SerializableSerializer());
 	@Test
 	public void createNode() {
@@ -36,8 +36,11 @@ public class ZkManagerTest {
 	}
 	@Test
 	public void getNodeData() {
-		String path = "/solr/ik/thireedic12.dic";  
+		String path = "/tokenizer/dic/1/synonym/goods-syn.dic";  
 		Object data=zkClient.readData(path);
+		System.out.println("get data:"+data);
+		path = "/tokenizer/dic/1/common/goods";  
+		data=zkClient.readData(path);
 		System.out.println("get data:"+data);
 	}
 

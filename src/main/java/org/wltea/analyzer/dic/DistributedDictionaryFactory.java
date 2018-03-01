@@ -111,11 +111,11 @@ public class DistributedDictionaryFactory {
 	}
 
 	public void reloadDistributedDic(Configuration cfg, Object dicData) {
-		JSONObject jsonObj = JSON.parseObject((String) dicData);
-		JSONArray jsonArray = jsonObj.getJSONArray("data");
+		String dicDataStr=(String) dicData;
+		String[] lines=dicDataStr.split("\r\n");
 		Set<String> pullDicCache = new HashSet<String>();
-		for (int i = 0; i <= (jsonArray.size() - 1); i++) {
-			String word = jsonArray.getString(i);
+		for (int i = 0; i <= (lines.length - 1); i++) {
+			String word = lines[i];
 			pullDicCache.add(word);
 		}
 		if (!dicRepo.containsKey(cfg.hashCode()))
@@ -136,10 +136,7 @@ public class DistributedDictionaryFactory {
 		String path = cfg.getDistributedDic();
 		// 如果节点不存在，则创建
 		if (!zkClient.exists(path)) {
-			JSONObject jsonObj = new JSONObject();
-			jsonObj.put("cfgCode", cfg.hashCode());
-			jsonObj.put("data", "[]");
-			zkClient.createPersistent(path, jsonObj.toJSONString());
+			zkClient.createPersistent(path, "[]");
 		} else {
 			Object data = zkClient.readData(path);
 			reloadDistributedDic(cfg, data);

@@ -27,6 +27,9 @@ public class ConfigConsts {
         
         InputStream in = ConfigConsts.class.getClassLoader().getResourceAsStream(
                 "context.properties");
+        if(null==in)
+        	in=ConfigConsts.class.getClassLoader().getResourceAsStream(
+                    "standalone-context.properties");
         try {
 			prop.load(in);
 			zkHost=prop.getProperty("zk.hosts");
